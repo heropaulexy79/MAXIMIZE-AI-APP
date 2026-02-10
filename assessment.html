@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MAXIMIZE — Your Assessment</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="assessment.css" />
+  <script src="config.js"></script>
+</head>
+<body>
+  <header class="navbar">
+    <img src="Asset 9@3x.png" alt="MAXIMIZE Nation" class="logo" />
+  </header>
+
+  <main class="assessment-container">
+    <div class="assessment-wrapper">
+      <!-- Progress Bar -->
+      <div class="progress-section">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <p class="progress-text"><span id="currentStep">1</span> of <span id="totalSteps">4</span></p>
+      </div>
+
+      <!-- Question Container -->
+      <div class="questions-container">
+        
+        <!-- Question 1: Role -->
+        <div class="question-slide" id="q1">
+          <div class="question-content">
+            <h2>What best describes your current role?</h2>
+            <div class="options-group">
+              <label class="option-label">
+                <input type="radio" name="role" value="Student" class="option-input" />
+                <span class="option-text">Student</span>
+              </label>
+              <label class="option-label">
+                <input type="radio" name="role" value="Professional" class="option-input" />
+                <span class="option-text">Professional</span>
+              </label>
+              <label class="option-label">
+                <input type="radio" name="role" value="Founder / Entrepreneur" class="option-input" />
+                <span class="option-text">Founder / Entrepreneur</span>
+              </label>
+              <label class="option-label">
+                <input type="radio" name="role" value="Leader / Manager" class="option-input" />
+                <span class="option-text">Leader / Manager</span>
+              </label>
+              <label class="option-label">
+                <input type="text" name="other-role" placeholder="Other (please specify)" class="option-input option-text-input" />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question 2: Challenges -->
+        <div class="question-slide" id="q2" style="display: none;">
+          <div class="question-content">
+            <h2>What feels most challenging right now?</h2>
+            <p class="helper-text">Select all that apply</p>
+            <div class="options-group">
+              <label class="option-label checkbox">
+                <input type="checkbox" name="challenges" value="Clarity & direction" class="option-input" />
+                <span class="option-text">Clarity & direction</span>
+              </label>
+              <label class="option-label checkbox">
+                <input type="checkbox" name="challenges" value="Confidence & self-belief" class="option-input" />
+                <span class="option-text">Confidence & self-belief</span>
+              </label>
+              <label class="option-label checkbox">
+                <input type="checkbox" name="challenges" value="Consistency & discipline" class="option-input" />
+                <span class="option-text">Consistency & discipline</span>
+              </label>
+              <label class="option-label checkbox">
+                <input type="checkbox" name="challenges" value="Emotional regulation" class="option-input" />
+                <span class="option-text">Emotional regulation</span>
+              </label>
+              <label class="option-label checkbox">
+                <input type="checkbox" name="challenges" value="Leadership influence" class="option-input" />
+                <span class="option-text">Leadership influence</span>
+              </label>
+              <label class="option-label checkbox">
+                <input type="checkbox" name="challenges" value="Purpose & meaning" class="option-input" />
+                <span class="option-text">Purpose & meaning</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question 3: What's Stuck -->
+        <div class="question-slide" id="q3" style="display: none;">
+          <div class="question-content">
+            <h2>In your own words, what feels most stuck or unresolved right now?</h2>
+            <p class="helper-text">Be honest. This is for your growth, not judgment. This is the heart of personalization.</p>
+            <textarea name="stuck" class="textarea-input" placeholder="Share what's on your mind..." rows="8"></textarea>
+          </div>
+        </div>
+
+        <!-- Question 4: Growth Posture -->
+        <div class="question-slide" id="q4" style="display: none;">
+          <div class="question-content">
+            <h2>How would you describe your current growth posture?</h2>
+            <div class="options-group">
+              <label class="option-label">
+                <input type="radio" name="growth-posture" value="Searching for clarity" class="option-input" />
+                <span class="option-text">Searching for clarity</span>
+              </label>
+              <label class="option-label">
+                <input type="radio" name="growth-posture" value="Reframing my mindset" class="option-input" />
+                <span class="option-text">Reframing my mindset</span>
+              </label>
+              <label class="option-label">
+                <input type="radio" name="growth-posture" value="Stepping into leadership" class="option-input" />
+                <span class="option-text">Stepping into leadership</span>
+              </label>
+              <label class="option-label">
+                <input type="radio" name="growth-posture" value="Executing with purpose" class="option-input" />
+                <span class="option-text">Executing with purpose</span>
+              </label>
+              <label class="option-label">
+                <input type="radio" name="growth-posture" value="Thinking long-term impact" class="option-input" />
+                <span class="option-text">Thinking long-term impact</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <div class="navigation-buttons">
+        <button id="prevBtn" class="nav-btn nav-btn-secondary" style="display: none;">Back</button>
+        <button id="nextBtn" class="nav-btn nav-btn-primary">Continue</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="assessment.js"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MAXIMIZE — Your Results</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="results.css" />
+  <script src="config.js"></script>
+</head>
+<body>
+  <header class="navbar">
+    <img src="Asset 9@3x.png" alt="MAXIMIZE Nation" class="logo" />
+  </header>
+
+  <main class="results-container">
+    <div id="loadingState" class="loading-state">
+      <div class="spinner"></div>
+      <p>Analyzing your responses...</p>
+    </div>
+
+    <div id="resultsState" class="results-wrapper" style="display: none;">
+      
+      <!-- Stage Card -->
+      <div class="stage-card">
+        <h1>You're in <span id="stageName"></span></h1>
+        <p class="stage-description" id="stageDescription"></p>
+      </div>
+
+      <!-- Key Insights -->
+      <div class="insights-section">
+        <h2>Your Key Insights</h2>
+        
+        <div class="insight-card">
+          <div class="insight-label">Your Role</div>
+          <div class="insight-value" id="insightRole"></div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-label">What's Challenging You</div>
+          <div class="insight-value" id="insightChallenges"></div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-label">What Feels Stuck</div>
+          <div class="insight-value insight-long" id="insightStuck"></div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-label">Your Growth Posture</div>
+          <div class="insight-value" id="insightPosture"></div>
+        </div>
+      </div>
+
+      <!-- Recommendations Section -->
+      <div class="recommendations-section">
+        <h2>Next Steps for Growth</h2>
+        <div id="recommendationsContainer" class="recommendations-list"></div>
+      </div>
+
+      <!-- CTA -->
+      <div class="results-cta">
+        <button id="downloadBtn" class="btn-primary">Download Your Insight Report</button>
+        <button id="restartBtn" class="btn-secondary">Start Over</button>
+      </div>
+    </div>
+
+    <div id="errorState" class="error-state" style="display: none;">
+      <h2>Oops! Something went wrong</h2>
+      <p>We couldn't process your assessment. Please try again.</p>
+      <button onclick="window.location.href='assessment.html'" class="btn-primary">Restart Assessment</button>
+    </div>
+  </main>
+
+  <script src="results.js"></script>
+</body>
+</html>
