@@ -1,5 +1,7 @@
 // Assessment Form Logic
 
+console.log("Assessment.js loaded");
+
 class AssessmentForm {
   constructor() {
     this.currentStep = 1;
@@ -217,6 +219,7 @@ class AssessmentForm {
   }
 
   sendToMake(assessmentData) {
+    console.log("Sending to Make:", assessmentData);
   const webhookUrl = MAXIMIZE_CONFIG.make.webhookUrl;
   const apiKey = MAXIMIZE_CONFIG.make.apiKey;
 
@@ -256,7 +259,7 @@ class AssessmentForm {
 
   mapToStage(growthPosture) {
     const stageMap = {
-      'Searching for clarity': 'Stage 1: Foundation',
+      'Searching for clarityy': 'Stage 1: Foundation',
       'Reframing my mindset': 'Stage 2: Awakening',
       'Stepping into leadership': 'Stage 3: Leadership',
       'Executing with purpose': 'Stage 4: Execution',
