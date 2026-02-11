@@ -12,7 +12,8 @@ class AssessmentForm {
       role: null,
       challenges: [],
       stuck: null,
-      'growth-posture': null
+      'growth-posture': null,
+      next_action: [] // Ensure next_action exists
     };
 
     this.init();
@@ -46,7 +47,6 @@ class AssessmentForm {
       this.prevQuestion();
     });
 
-    // Also allow Enter key to continue on certain questions
     document.addEventListener('keypress', (e) => {
       if (e.key === 'Enter' && this.currentStep < this.totalSteps) {
         const textarea = document.querySelector('.textarea-input:not([style*="display: none"])');
@@ -65,7 +65,6 @@ class AssessmentForm {
 
     switch (this.currentStep) {
       case 1:
-        // Q1: Full Name and Email
         const fullNameInput = question.querySelector('input[name="fullName"]');
         const emailInput = question.querySelector('input[name="email"]');
         
@@ -98,7 +97,6 @@ class AssessmentForm {
         return true;
 
       case 2:
-        // Q2: Role - either a radio selected or text input filled
         const roleRadios = question.querySelectorAll('input[name="role"]');
         const roleText = question.querySelector('input[name="other-role"]');
         
@@ -110,7 +108,6 @@ class AssessmentForm {
           return false;
         }
 
-        // Save the answer
         if (radioSelected) {
           const selected = Array.from(roleRadios).find(r => r.checked);
           this.answers.role = selected.value;
@@ -120,7 +117,6 @@ class AssessmentForm {
         return true;
 
       case 3:
-        // Q3: Challenges - at least one checked
         const checkboxes = question.querySelectorAll('input[name="challenges"]');
         const selected = Array.from(checkboxes).filter(c => c.checked);
 
@@ -133,7 +129,6 @@ class AssessmentForm {
         return true;
 
       case 4:
-        // Q4: Stuck - textarea must have content
         const textarea = question.querySelector('textarea[name="stuck"]');
 
         if (!textarea.value.trim()) {
@@ -145,7 +140,6 @@ class AssessmentForm {
         return true;
 
       case 5:
-        // Q5: Growth Posture - one selected
         const growthRadios = question.querySelectorAll('input[name="growth-posture"]');
         const posture = Array.from(growthRadios).find(r => r.checked);
 
@@ -188,21 +182,16 @@ class AssessmentForm {
       return;
     }
 
-    // Hide current question
     const currentQuestion = document.getElementById(`q${this.currentStep}`);
     currentQuestion.style.display = 'none';
 
-    // Move to next
     this.currentStep++;
     
-    // Show next question
     const nextQuestion = document.getElementById(`q${this.currentStep}`);
     nextQuestion.style.display = 'block';
 
-    // Update progress
     this.updateProgress();
 
-    // Focus on first input of new question
     setTimeout(() => {
       const firstInput = nextQuestion.querySelector('input, textarea');
       if (firstInput) firstInput.focus();
@@ -212,18 +201,14 @@ class AssessmentForm {
   prevQuestion() {
     if (this.currentStep === 1) return;
 
-    // Hide current question
     const currentQuestion = document.getElementById(`q${this.currentStep}`);
     currentQuestion.style.display = 'none';
 
-    // Move to previous
     this.currentStep--;
     
-    // Show previous question
     const prevQuestion = document.getElementById(`q${this.currentStep}`);
     prevQuestion.style.display = 'block';
 
-    // Update progress
     this.updateProgress();
   }
 
@@ -233,99 +218,85 @@ class AssessmentForm {
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
 
-    // Update progress bar
     const percentage = (this.currentStep / this.totalSteps) * 100;
     progressFill.style.width = percentage + '%';
-
-    // Update step text
     currentStepEl.textContent = this.currentStep;
 
-    // Show/hide back button
-    if (this.currentStep === 1) {
-      prevBtn.style.display = 'none';
-    } else {
-      prevBtn.style.display = 'flex';
-    }
-
-    // Update next button text
-    if (this.currentStep === this.totalSteps) {
-      nextBtn.textContent = 'Reveal My Insight';
-    } else {
-      nextBtn.textContent = 'Continue';
-    }
+    prevBtn.style.display = this.currentStep === 1 ? 'none' : 'flex';
+    nextBtn.textContent = this.currentStep === this.totalSteps ? 'Reveal My Insight' : 'Continue';
   }
 
   submitAssessment() {
-    // Package all answers
+    // Ensure next_action is a proper array
+    if (typeof this.answers.next_action === 'string') {
+      this.answers.next_action = this.answers.next_action
+        .split(',')
+        .map(a => a.trim())
+        .filter(a => a.length > 0);
+    } else if (!Array.isArray(this.answers.next_action)) {
+      this.answers.next_action = [];
+    }
+
     const assessmentData = {
       timestamp: new Date().toISOString(),
       answers: this.answers,
       stage: this.mapToStage(this.answers['growth-posture'])
     };
 
-    // Show processing state
     const nextBtn = document.getElementById('nextBtn');
     nextBtn.textContent = '✓ Processing...';
     nextBtn.disabled = true;
 
-    // Send to Make webhook
     this.sendToMake(assessmentData);
   }
 
   sendToMake(assessmentData) {
-  console.log("Sending to Make:", assessmentData);
+    console.log("Sending to Make:", assessmentData);
 
-  const webhookUrl = MAXIMIZE_CONFIG.make.webhookUrl;
-  const apiKey = MAXIMIZE_CONFIG.make.apiKey;
+    const webhookUrl = MAXIMIZE_CONFIG.make.webhookUrl;
+    const apiKey = MAXIMIZE_CONFIG.make.apiKey;
 
-  const nextBtn = document.getElementById('nextBtn');
+    const nextBtn = document.getElementById('nextBtn');
 
-  if (!webhookUrl || !apiKey) {
-    console.warn('Make webhook not configured. Saving data locally only.');
-    localStorage.setItem('assessmentData', JSON.stringify(assessmentData));
-    window.location.href = 'results.html';
-    return;
-  }
-
-  fetch(webhookUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-make-apikey": apiKey
-    },
-    body: JSON.stringify(assessmentData)
-  })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Make webhook failed: ${response.status}`);
-      }
-
-      // 🔥 IMPORTANT — your Make webhook must return JSON
-      return response.json();
-    })
-    .then(aiResult => {
-
-      console.log("AI Response from Make:", aiResult);
-
-      // Save BOTH assessment + AI result
-      const fullResult = {
-        assessment: assessmentData,
-        ai: aiResult
-      };
-
-      localStorage.setItem('maximizeResult', JSON.stringify(fullResult));
-
+    if (!webhookUrl || !apiKey) {
+      console.warn('Make webhook not configured. Saving data locally only.');
+      localStorage.setItem('assessmentData', JSON.stringify(assessmentData));
       window.location.href = 'results.html';
+      return;
+    }
+
+    fetch(webhookUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-make-apikey": apiKey
+      },
+      body: JSON.stringify(assessmentData)
     })
-    .catch(error => {
-      console.error('Error sending to Make:', error);
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Make webhook failed: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(aiResult => {
+        console.log("AI Response from Make:", aiResult);
 
-      nextBtn.textContent = 'Error. Try Again';
-      nextBtn.disabled = false;
-    });
-}
+        const fullResult = {
+          assessment: assessmentData,
+          ai: aiResult
+        };
 
+        localStorage.setItem('maximizeResult', JSON.stringify(fullResult));
 
+        window.location.href = 'results.html';
+      })
+      .catch(error => {
+        console.error('Error sending to Make:', error);
+        nextBtn.textContent = 'Error. Try Again';
+        nextBtn.disabled = false;
+      });
+  }
 
   mapToStage(growthPosture) {
     const stageMap = {
