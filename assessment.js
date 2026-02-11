@@ -27,8 +27,24 @@ class AssessmentForm {
     const nextBtn = document.getElementById('nextBtn');
     const prevBtn = document.getElementById('prevBtn');
 
-    nextBtn.addEventListener('click', () => this.nextQuestion());
-    prevBtn.addEventListener('click', () => this.prevQuestion());
+    if (!nextBtn || !prevBtn) {
+      console.error('Navigation buttons not found');
+      return;
+    }
+
+    console.log('Setting up event listeners for buttons');
+    
+    nextBtn.addEventListener('click', (e) => {
+      console.log('Next button clicked');
+      e.preventDefault();
+      this.nextQuestion();
+    });
+    
+    prevBtn.addEventListener('click', (e) => {
+      console.log('Previous button clicked');
+      e.preventDefault();
+      this.prevQuestion();
+    });
 
     // Also allow Enter key to continue on certain questions
     document.addEventListener('keypress', (e) => {
@@ -52,6 +68,11 @@ class AssessmentForm {
         // Q1: Full Name and Email
         const fullNameInput = question.querySelector('input[name="fullName"]');
         const emailInput = question.querySelector('input[name="email"]');
+        
+        if (!fullNameInput || !emailInput) {
+          console.error('Form inputs not found');
+          return false;
+        }
         
         const fullName = fullNameInput.value.trim();
         const email = emailInput.value.trim();
@@ -141,39 +162,6 @@ class AssessmentForm {
     }
   }
 
-        this.answers.challenges = selected.map(c => c.value);
-        return true;
-
-      case 3:
-        // Q3: Stuck - textarea must have content
-        const textarea = question.querySelector('textarea[name="stuck"]');
-
-        if (!textarea.value.trim()) {
-          this.showValidationError('Please share what feels stuck');
-          return false;
-        }
-
-        this.answers.stuck = textarea.value.trim();
-        return true;
-
-      case 4:
-        // Q4: Growth Posture - one selected
-        const growthRadios = question.querySelectorAll('input[name="growth-posture"]');
-        const posture = Array.from(growthRadios).find(r => r.checked);
-
-        if (!posture) {
-          this.showValidationError('Please describe your growth posture');
-          return false;
-        }
-
-        this.answers['growth-posture'] = posture.value;
-        return true;
-
-      default:
-        return false;
-    }
-  }
-
   showValidationError(message) {
     const nextBtn = document.getElementById('nextBtn');
     const originalText = nextBtn.textContent;
@@ -188,7 +176,10 @@ class AssessmentForm {
   }
 
   nextQuestion() {
+    console.log('nextQuestion called for step', this.currentStep);
+    
     if (!this.validateCurrentQuestion()) {
+      console.log('Validation failed for step', this.currentStep);
       return;
     }
 
