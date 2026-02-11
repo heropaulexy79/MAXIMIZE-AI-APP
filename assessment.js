@@ -273,9 +273,12 @@ class AssessmentForm {
   }
 
   sendToMake(assessmentData) {
-    console.log("Sending to Make:", assessmentData);
+  console.log("Sending to Make:", assessmentData);
+
   const webhookUrl = MAXIMIZE_CONFIG.make.webhookUrl;
   const apiKey = MAXIMIZE_CONFIG.make.apiKey;
+
+  const nextBtn = document.getElementById('nextBtn');
 
   if (!webhookUrl || !apiKey) {
     console.warn('Make webhook not configured. Saving data locally only.');
@@ -296,19 +299,32 @@ class AssessmentForm {
       if (!response.ok) {
         throw new Error(`Make webhook failed: ${response.status}`);
       }
-      return response.text(); // 👈 IMPORTANT (see Fix #2)
+
+      // 🔥 IMPORTANT — your Make webhook must return JSON
+      return response.json();
     })
-    .then(data => {
-      localStorage.setItem('assessmentData', JSON.stringify(assessmentData));
-      console.log("Sent to Make successfully:", data);
+    .then(aiResult => {
+
+      console.log("AI Response from Make:", aiResult);
+
+      // Save BOTH assessment + AI result
+      const fullResult = {
+        assessment: assessmentData,
+        ai: aiResult
+      };
+
+      localStorage.setItem('maximizeResult', JSON.stringify(fullResult));
+
       window.location.href = 'results.html';
     })
     .catch(error => {
       console.error('Error sending to Make:', error);
-      localStorage.setItem('assessmentData', JSON.stringify(assessmentData));
-      window.location.href = 'results.html';
+
+      nextBtn.textContent = 'Error. Try Again';
+      nextBtn.disabled = false;
     });
 }
+
 
 
   mapToStage(growthPosture) {

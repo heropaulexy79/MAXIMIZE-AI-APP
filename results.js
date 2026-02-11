@@ -2,97 +2,100 @@
 
 class ResultsPage {
   constructor() {
-    this.assessmentData = null;
+    this.data = null;
     this.init();
   }
 
   init() {
-    // Simulate loading delay
-    setTimeout(() => {
-      this.loadAssessmentData();
-    }, 2000);
+    this.loadResultData();
   }
 
-  loadAssessmentData() {
-    // First, try to get data from Make response
-    const makeResponse = localStorage.getItem('makeResponse');
-    const assessmentData = localStorage.getItem('assessmentData');
+  loadResultData() {
+    const stored = localStorage.getItem('maximizeResult');
 
-    if (!assessmentData) {
+    if (!stored) {
       this.showError();
       return;
     }
 
     try {
-      this.assessmentData = JSON.parse(assessmentData);
-      
-      // If Make response exists, merge it with assessment data
-      if (makeResponse) {
-        const makeData = JSON.parse(makeResponse);
-        this.assessmentData = { ...this.assessmentData, ...makeData };
-        console.log('Merged data from Make:', this.assessmentData);
-      }
-      
+      this.data = JSON.parse(stored);
       this.displayResults();
     } catch (error) {
-      console.error('Error parsing assessment data:', error);
+      console.error('Error parsing result data:', error);
       this.showError();
     }
   }
 
   displayResults() {
-    // Hide loading, show results
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('resultsState').style.display = 'block';
 
-    // Populate stage info
     this.displayStage();
-    
-    // Populate insights
     this.displayInsights();
-    
-    // Generate recommendations
     this.displayRecommendations();
-
-    // Setup buttons
     this.setupButtons();
   }
 
   displayStage() {
-    const { stage } = this.assessmentData;
+    const stage =
+      this.data.ai?.stage || this.data.assessment?.stage || 'Unknown Stage';
+
     const stageName = stage.replace('Stage ', '').replace(': ', ' — ');
 
     document.getElementById('stageName').textContent = stageName;
-    document.getElementById('stageDescription').textContent = this.getStageDescription(stage);
+    document.getElementById('stageDescription').textContent =
+      this.getStageDescription(stage);
   }
 
   displayInsights() {
-    const { answers } = this.assessmentData;
+    const answers = this.data.assessment?.answers;
 
-    // Role insight
-    document.getElementById('insightRole').textContent = answers.role || 'Not specified';
+    if (!answers) return;
 
-    // Challenges insight
-    const challengesList = answers.challenges && answers.challenges.length > 0
-      ? answers.challenges.join(', ')
-      : 'Not specified';
-    document.getElementById('insightChallenges').innerHTML = challengesList
-      .split(', ')
-      .map(c => `<span class="challenge-tag">${c}</span>`)
-      .join('');
+    document.getElementById('insightRole').textContent =
+      answers.role || 'Not specified';
 
-    // Stuck insight
-    document.getElementById('insightStuck').textContent = `"${answers.stuck || 'Not specified'}"`;
+    const challengesList =
+      answers.challenges && answers.challenges.length > 0
+        ? answers.challenges
+        : [];
 
-    // Growth posture insight
-    document.getElementById('insightPosture').textContent = answers['growth-posture'] || 'Not specified';
+    document.getElementById('insightChallenges').innerHTML =
+      challengesList
+        .map(c => `<span class="challenge-tag">${c}</span>`)
+        .join('') || 'Not specified';
+
+    document.getElementById('insightStuck').textContent =
+      `"${answers.stuck || 'Not specified'}"`;
+
+    document.getElementById('insightPosture').textContent =
+      answers['growth-posture'] || 'Not specified';
   }
 
   displayRecommendations() {
-    const { answers, stage } = this.assessmentData;
-    const recommendations = this.generateRecommendations(stage, answers);
-
+    const aiRecommendations = this.data.ai?.nextActions;
     const container = document.getElementById('recommendationsContainer');
+
+    // 🔥 If AI returned custom recommendations, use them
+    if (aiRecommendations && aiRecommendations.length > 0) {
+      container.innerHTML = aiRecommendations
+        .map((rec, index) => `
+          <div class="recommendation-item">
+            <div class="recommendation-title">${index + 1}. Action Step</div>
+            <p class="recommendation-text">${rec}</p>
+          </div>
+        `)
+        .join('');
+      return;
+    }
+
+    // Fallback to stage-based recommendations
+    const stage =
+      this.data.ai?.stage || this.data.assessment?.stage;
+
+    const recommendations = this.generateRecommendations(stage);
+
     container.innerHTML = recommendations
       .map(rec => `
         <div class="recommendation-item">
@@ -103,114 +106,72 @@ class ResultsPage {
       .join('');
   }
 
-  generateRecommendations(stage, answers) {
+  generateRecommendations(stage) {
     const baseRecommendations = {
-      'Stage 1: Foundation': [
+      'Stage 1: Identity Revelation': [
         {
-          title: '1. Define Your Why',
-          text: 'Before any strategy, clarify your core purpose and values. This becomes your compass for all decisions.'
+          title: '1. Clarify Your Identity',
+          text: 'Define who you are beyond your current role. Identity shapes behavior.'
         },
         {
-          title: '2. Build Daily Habits',
-          text: 'Start small with one consistent habit that aligns with your goals. Small wins compound over time.'
+          title: '2. Audit Your Beliefs',
+          text: 'Write down 3 beliefs currently shaping your decisions.'
         },
         {
-          title: '3. Find a Mentor or Community',
-          text: 'Seek guidance from those 2-3 steps ahead of you. Community accelerates learning exponentially.'
-        },
-        {
-          title: '4. Start Documenting',
-          text: 'Keep a growth journal. Reflect weekly on what worked, what didn\'t, and why.'
+          title: '3. Seek Clarity Conversations',
+          text: 'Talk with someone 2 steps ahead of you about your blind spots.'
         }
       ],
-      'Stage 2: Awakening': [
+      'Stage 2: Mindset Transformation': [
         {
-          title: '1. Reframe Your Limiting Beliefs',
-          text: 'Challenge the stories you\'ve told yourself. Replace each "I can\'t" with "I haven\'t learned how to yet."'
+          title: '1. Reframe Limiting Narratives',
+          text: 'Challenge internal assumptions that limit growth.'
         },
         {
-          title: '2. Expand Your Networks',
-          text: 'Connect with people at the next level. Your network is your net worth and your personal growth multiplier.'
-        },
-        {
-          title: '3. Invest in Learning',
-          text: 'Take a course, read books, or find a coach in your area of growth. Knowledge compounds.'
-        },
-        {
-          title: '4. Create Accountability',
-          text: 'Partner with someone for weekly check-ins. External accountability drives real change.'
+          title: '2. Expand Learning Capacity',
+          text: 'Invest intentionally in skill and mental expansion.'
         }
       ],
-      'Stage 3: Leadership': [
+      'Stage 3: Leadership Activation': [
         {
-          title: '1. Develop Your Leadership Philosophy',
-          text: 'Define how you lead, what you stand for, and the culture you want to create.'
-        },
-        {
-          title: '2. Invest in Your Team',
-          text: 'Great leaders develop other leaders. Focus on raising people up, not just getting results.'
-        },
-        {
-          title: '3. Build Strategic Partnerships',
-          text: 'Collaborate with complementary leaders. Partnerships amplify impact and reach.'
-        },
-        {
-          title: '4. Model the Way',
-          text: 'Be the person you want your team to become. Leadership is influence through example.'
+          title: '1. Lead Something Small',
+          text: 'Start influencing within your immediate circle.'
         }
       ],
-      'Stage 4: Execution': [
+      'Stage 4: Purpose Deployment': [
         {
-          title: '1. Optimize Your Systems',
-          text: 'Audit your workflows and eliminate friction. Small process improvements compound into massive gains.'
-        },
-        {
-          title: '2. Measure What Matters',
-          text: 'Define key metrics for your goals. What gets measured gets managed.'
-        },
-        {
-          title: '3. Elevate Your Team',
-          text: 'Delegate strategically. Your job is to multiply impact through others, not do everything yourself.'
-        },
-        {
-          title: '4. Build Leverage',
-          text: 'Focus on high-impact activities. Master the art of doing more with less friction.'
+          title: '1. Build Systems',
+          text: 'Structure your work to create consistent outcomes.'
         }
       ],
-      'Stage 5: Legacy': [
+      'Stage 5: Legacy Construction': [
         {
-          title: '1. Define Your Legacy Intent',
-          text: 'What impact do you want to leave? Let this guide every major decision.'
-        },
-        {
-          title: '2. Create Scalable Systems',
-          text: 'Build processes that can operate without you. True legacy is impact that outlasts you.'
-        },
-        {
-          title: '3. Mentor the Next Generation',
-          text: 'Invest deeply in emerging leaders. This is how movements are born.'
-        },
-        {
-          title: '4. Measure Impact',
-          text: 'Track not just financial success but cultural, social, and personal impact.'
+          title: '1. Design for Continuity',
+          text: 'Think beyond yourself. Build structures that outlive you.'
         }
       ]
     };
 
-    // Return relevant recommendations, or defaults if stage not found
-    return baseRecommendations[stage] || baseRecommendations['Stage 1: Foundation'];
+    return baseRecommendations[stage] ||
+      baseRecommendations['Stage 1: Identity Revelation'];
   }
 
   getStageDescription(stage) {
     const descriptions = {
-      'Stage 1: Foundation': 'You\'re building your foundation. This is about clarity, consistency, and creating the habits that will carry you forward.',
-      'Stage 2: Awakening': 'You\'re awakening to new possibilities. This stage is about reframing your mindset and expanding your beliefs about what\'s possible.',
-      'Stage 3: Leadership': 'You\'re stepping into leadership. Now it\'s about multiplying your impact through others and creating meaningful influence.',
-      'Stage 4: Execution': 'You\'re executing with purpose. This stage is about mastering systems, optimizing processes, and scaling what works.',
-      'Stage 5: Legacy': 'You\'re thinking in terms of legacy. Your focus shifts to creating lasting impact that will outlive your direct efforts.'
+      'Stage 1: Identity Revelation':
+        'This stage is about uncovering who you truly are beneath performance and pressure.',
+      'Stage 2: Mindset Transformation':
+        'Here, you are rewiring the internal architecture shaping your decisions.',
+      'Stage 3: Leadership Activation':
+        'You are stepping into influence and activating responsibility.',
+      'Stage 4: Purpose Deployment':
+        'Execution becomes aligned with purpose and structure.',
+      'Stage 5: Legacy Construction':
+        'You are thinking beyond impact toward generational influence.'
     };
 
-    return descriptions[stage] || 'Continue your growth journey with intention and purpose.';
+    return descriptions[stage] ||
+      'Continue your growth journey with clarity and intention.';
   }
 
   setupButtons() {
@@ -219,58 +180,57 @@ class ResultsPage {
     });
 
     document.getElementById('restartBtn').addEventListener('click', () => {
-      localStorage.removeItem('assessmentData');
+      localStorage.removeItem('maximizeResult');
       window.location.href = 'assessment.html';
     });
   }
 
   downloadReport() {
-    const { answers, stage } = this.assessmentData;
-    const reportContent = this.generateReportContent(answers, stage);
+    const answers = this.data.assessment?.answers;
+    const stage =
+      this.data.ai?.stage || this.data.assessment?.stage;
 
-    // Create and download PDF or TXT (simple implementation uses download text file)
+    const aiInsights = this.data.ai?.coreIssues || [];
+
+    const reportContent = `
+MAXIMIZE — PERSONAL INSIGHT REPORT
+════════════════════════════════════
+
+STAGE:
+${stage}
+
+CORE INSIGHTS:
+${aiInsights.join('\n')}
+
+ROLE:
+${answers?.role}
+
+CHALLENGES:
+${answers?.challenges?.join('\n')}
+
+WHAT FEELS STUCK:
+"${answers?.stuck}"
+
+GROWTH POSTURE:
+${answers?.['growth-posture']}
+
+════════════════════════════════════
+Generated by MAXIMIZE AI Diagnostic
+    `.trim();
+
     const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(reportContent));
-    element.setAttribute('download', 'MAXIMIZE_Assessment_Report.txt');
-    element.style.display = 'none';
+    element.setAttribute(
+      'href',
+      'data:text/plain;charset=utf-8,' +
+        encodeURIComponent(reportContent)
+    );
+    element.setAttribute(
+      'download',
+      'MAXIMIZE_Insight_Report.txt'
+    );
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
-  }
-
-  generateReportContent(answers, stage) {
-    const timestamp = new Date(this.assessmentData.timestamp).toLocaleDateString();
-    
-    return `
-MAXIMIZE — ASSESSMENT REPORT
-Generated: ${timestamp}
-═══════════════════════════════════════════════════════════════
-
-YOUR STAGE
-${stage}
-
-KEY INSIGHTS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Your Role:
-${answers.role}
-
-Challenges You're Facing:
-${answers.challenges.join('\n')}
-
-What Feels Stuck:
-"${answers.stuck}"
-
-Your Growth Posture:
-${answers['growth-posture']}
-
-═══════════════════════════════════════════════════════════════
-
-This assessment is your personalized roadmap for growth.
-Use these insights to inform your next steps and priorities.
-
-MAXIMIZE Nation — Discover Your Stage, Own Your Growth
-    `.trim();
   }
 
   showError() {
@@ -279,7 +239,6 @@ MAXIMIZE Nation — Discover Your Stage, Own Your Growth
   }
 }
 
-// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   new ResultsPage();
 });
