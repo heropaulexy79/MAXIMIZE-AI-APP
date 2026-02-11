@@ -20,14 +20,29 @@
         <div class="progress-bar">
           <div class="progress-fill" id="progressFill"></div>
         </div>
-        <p class="progress-text"><span id="currentStep">1</span> of <span id="totalSteps">4</span></p>
+        <p class="progress-text"><span id="currentStep">1</span> of <span id="totalSteps">5</span></p>
       </div>
 
       <!-- Question Container -->
       <div class="questions-container">
         
-        <!-- Question 1: Role -->
+        <!-- Question 1: Full Name and Email -->
         <div class="question-slide" id="q1">
+          <div class="question-content">
+            <h2>Let's start with your information</h2>
+            <div class="form-group">
+              <label for="fullName" class="form-label">Full Name</label>
+              <input type="text" id="fullName" name="fullName" class="form-input" placeholder="Enter your full name" required />
+            </div>
+            <div class="form-group">
+              <label for="email" class="form-label">Email Address</label>
+              <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email address" required />
+            </div>
+          </div>
+        </div>
+
+        <!-- Question 2: Role -->
+        <div class="question-slide" id="q2" style="display: none;">
           <div class="question-content">
             <h2>What best describes your current role?</h2>
             <div class="options-group">
@@ -54,8 +69,8 @@
           </div>
         </div>
 
-        <!-- Question 2: Challenges -->
-        <div class="question-slide" id="q2" style="display: none;">
+        <!-- Question 3: Challenges -->
+        <div class="question-slide" id="q3" style="display: none;">
           <div class="question-content">
             <h2>What feels most challenging right now?</h2>
             <p class="helper-text">Select all that apply</p>
@@ -88,8 +103,8 @@
           </div>
         </div>
 
-        <!-- Question 3: What's Stuck -->
-        <div class="question-slide" id="q3" style="display: none;">
+        <!-- Question 4: What's Stuck -->
+        <div class="question-slide" id="q4" style="display: none;">
           <div class="question-content">
             <h2>In your own words, what feels most stuck or unresolved right now?</h2>
             <p class="helper-text">Be honest. This is for your growth, not judgment. This is the heart of personalization.</p>
@@ -97,8 +112,8 @@
           </div>
         </div>
 
-        <!-- Question 4: Growth Posture -->
-        <div class="question-slide" id="q4" style="display: none;">
+        <!-- Question 5: Growth Posture -->
+        <div class="question-slide" id="q5" style="display: none;">
           <div class="question-content">
             <h2>How would you describe your current growth posture?</h2>
             <div class="options-group">

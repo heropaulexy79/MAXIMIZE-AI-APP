@@ -5,8 +5,10 @@ console.log("Assessment.js loaded");
 class AssessmentForm {
   constructor() {
     this.currentStep = 1;
-    this.totalSteps = 4;
+    this.totalSteps = 5;
     this.answers = {
+      fullName: null,
+      email: null,
       role: null,
       challenges: [],
       stuck: null,
@@ -47,7 +49,35 @@ class AssessmentForm {
 
     switch (this.currentStep) {
       case 1:
-        // Q1: Role - either a radio selected or text input filled
+        // Q1: Full Name and Email
+        const fullNameInput = question.querySelector('input[name="fullName"]');
+        const emailInput = question.querySelector('input[name="email"]');
+        
+        const fullName = fullNameInput.value.trim();
+        const email = emailInput.value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!fullName) {
+          this.showValidationError('Please enter your full name');
+          return false;
+        }
+
+        if (!email) {
+          this.showValidationError('Please enter your email address');
+          return false;
+        }
+
+        if (!emailRegex.test(email)) {
+          this.showValidationError('Please enter a valid email address');
+          return false;
+        }
+
+        this.answers.fullName = fullName;
+        this.answers.email = email;
+        return true;
+
+      case 2:
+        // Q2: Role - either a radio selected or text input filled
         const roleRadios = question.querySelectorAll('input[name="role"]');
         const roleText = question.querySelector('input[name="other-role"]');
         
@@ -68,8 +98,8 @@ class AssessmentForm {
         }
         return true;
 
-      case 2:
-        // Q2: Challenges - at least one checked
+      case 3:
+        // Q3: Challenges - at least one checked
         const checkboxes = question.querySelectorAll('input[name="challenges"]');
         const selected = Array.from(checkboxes).filter(c => c.checked);
 
@@ -77,6 +107,39 @@ class AssessmentForm {
           this.showValidationError('Please select at least one challenge');
           return false;
         }
+
+        this.answers.challenges = selected.map(c => c.value);
+        return true;
+
+      case 4:
+        // Q4: Stuck - textarea must have content
+        const textarea = question.querySelector('textarea[name="stuck"]');
+
+        if (!textarea.value.trim()) {
+          this.showValidationError('Please share what feels stuck');
+          return false;
+        }
+
+        this.answers.stuck = textarea.value.trim();
+        return true;
+
+      case 5:
+        // Q5: Growth Posture - one selected
+        const growthRadios = question.querySelectorAll('input[name="growth-posture"]');
+        const posture = Array.from(growthRadios).find(r => r.checked);
+
+        if (!posture) {
+          this.showValidationError('Please describe your growth posture');
+          return false;
+        }
+
+        this.answers['growth-posture'] = posture.value;
+        return true;
+
+      default:
+        return false;
+    }
+  }
 
         this.answers.challenges = selected.map(c => c.value);
         return true;
@@ -259,11 +322,11 @@ class AssessmentForm {
 
   mapToStage(growthPosture) {
     const stageMap = {
-      'Searching for clarityy': 'Stage 1: Foundation',
-      'Reframing my mindset': 'Stage 2: Awakening',
-      'Stepping into leadership': 'Stage 3: Leadership',
-      'Executing with purpose': 'Stage 4: Execution',
-      'Thinking long-term impact': 'Stage 5: Legacy'
+      'Searching for clarityy': 'Stage 1: Identity Revelation',
+      'Reframing my mindset': 'Stage 2: Mindset Transformation',
+      'Stepping into leadership': 'Stage 3: Leadership Activation',
+      'Executing with purpose': 'Stage 4: Purpose Deployment',
+      'Thinking long-term impact': 'Stage 5: Legacy Construction'
     };
     return stageMap[growthPosture] || 'Unknown Stage';
   }
