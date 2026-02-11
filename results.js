@@ -45,12 +45,16 @@ class ResultsPage {
   document.getElementById('stageDescription').textContent = ai.core_issue || '';
 
   // Recommendations / Next Actions
-  let nextActions = ai.next_action;
+ let nextActions = ai.next_action;
 
-  // Ensure it's an array
-  if (!Array.isArray(nextActions)) {
-    nextActions = String(nextActions).split(',').map(item => item.trim());
-  }
+// If nextActions is a string, split by commas
+if (!Array.isArray(nextActions)) {
+  nextActions = String(nextActions).split(',').map(item => item.trim());
+} else {
+  // If it's an array of objects, extract the string
+  nextActions = nextActions.map(a => a.step || a.text || a.toString());
+}
+
 
   const container = document.getElementById('recommendationsContainer');
   container.innerHTML = nextActions
