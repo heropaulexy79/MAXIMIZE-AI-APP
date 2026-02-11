@@ -226,16 +226,22 @@ class AssessmentForm {
     nextBtn.textContent = this.currentStep === this.totalSteps ? 'Reveal My Insight' : 'Continue';
   }
 
-  submitAssessment() {
-    // Ensure next_action is a proper array
-    if (typeof this.answers.next_action === 'string') {
-      this.answers.next_action = this.answers.next_action
-        .split(',')
+  // Helper to normalize next_action into a proper array
+  normalizeNextAction(nextAction) {
+    if (!nextAction) return [];
+    if (Array.isArray(nextAction)) return nextAction;
+    if (typeof nextAction === 'string') {
+      return nextAction
+        .split(/\n|,/) // split by newline or comma
         .map(a => a.trim())
         .filter(a => a.length > 0);
-    } else if (!Array.isArray(this.answers.next_action)) {
-      this.answers.next_action = [];
     }
+    return [];
+  }
+
+  submitAssessment() {
+    // Normalize next_action so JSON is valid
+    this.answers.next_action = this.normalizeNextAction(this.answers.next_action);
 
     const assessmentData = {
       timestamp: new Date().toISOString(),
