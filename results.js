@@ -35,44 +35,44 @@ class ResultsPage {
     this.setupButtons();
   }
 
-  displayAIOutput() {
-    const aiData = this.data.ai;
+ displayAIOutput() {
+  const ai = this.data.ai;
+  if (!ai) return;
 
-    if (!aiData) {
-      document.getElementById('recommendationsContainer').innerHTML = '<p>No AI data available.</p>';
-      return;
-    }
+  // Stage
+  const stageName = ai.stage || 'Unknown Stage';
+  document.getElementById('stageName').textContent = stageName;
+  document.getElementById('stageDescription').textContent = ai.core_issue || '';
 
-    // Stage
-    document.getElementById('stageName').textContent = aiData.stage || 'Unknown Stage';
+  // Recommendations / Next Actions
+  let nextActions = ai.next_action;
 
-    // Core Issue
-    document.getElementById('stageDescription').textContent = aiData.core_issue || '';
-
-    // Next Actions
-    const nextActions = aiData.next_action || [];
-    const container = document.getElementById('recommendationsContainer');
-    container.innerHTML = '';
-
-    nextActions.forEach((action, index) => {
-      container.innerHTML += `
-        <div class="recommendation-item">
-          <div class="recommendation-title">${index + 1}. Next Action</div>
-          <p class="recommendation-text">${action}</p>
-        </div>
-      `;
-    });
-
-    // Reflection Question
-    if (aiData.reflection_question) {
-      container.innerHTML += `
-        <div class="recommendation-item">
-          <div class="recommendation-title">Reflection Question</div>
-          <p class="recommendation-text">${aiData.reflection_question}</p>
-        </div>
-      `;
-    }
+  // Ensure it's an array
+  if (!Array.isArray(nextActions)) {
+    nextActions = String(nextActions).split(',').map(item => item.trim());
   }
+
+  const container = document.getElementById('recommendationsContainer');
+  container.innerHTML = nextActions
+    .map((action, index) => `
+      <div class="recommendation-item">
+        <div class="recommendation-title">${index + 1}. Action Step</div>
+        <p class="recommendation-text">${action}</p>
+      </div>
+    `)
+    .join('');
+
+  // Reflection Question
+  if (ai.reflection_question) {
+    container.innerHTML += `
+      <div class="recommendation-item">
+        <div class="recommendation-title">Reflection Question</div>
+        <p class="recommendation-text">${ai.reflection_question}</p>
+      </div>
+    `;
+  }
+}
+
 
   setupButtons() {
     document.getElementById('downloadBtn').addEventListener('click', () => {
