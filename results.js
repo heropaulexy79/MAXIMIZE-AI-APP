@@ -1,4 +1,4 @@
-// Results Page Logic
+// Results Page Logic — Updated for Make JSON
 
 class ResultsPage {
   constructor() {
@@ -38,140 +38,83 @@ class ResultsPage {
   }
 
   displayStage() {
-    const stage =
-      this.data.ai?.stage || this.data.assessment?.stage || 'Unknown Stage';
+    // Use AI stage if available, fallback to assessment
+    const stage = this.data.ai?.stage || this.data.assessment?.stage || 'Unknown Stage';
 
-    const stageName = stage.replace('Stage ', '').replace(': ', ' — ');
-
-    document.getElementById('stageName').textContent = stageName;
+    document.getElementById('stageName').textContent = stage;
     document.getElementById('stageDescription').textContent =
       this.getStageDescription(stage);
   }
 
   displayInsights() {
     const answers = this.data.assessment?.answers;
+    const aiData = this.data.ai;
 
     if (!answers) return;
 
-    document.getElementById('insightRole').textContent =
-      answers.role || 'Not specified';
+    document.getElementById('insightRole').textContent = answers.role || 'Not specified';
 
-    const challengesList =
-      answers.challenges && answers.challenges.length > 0
-        ? answers.challenges
-        : [];
-
+    const challengesList = answers.challenges || [];
     document.getElementById('insightChallenges').innerHTML =
-      challengesList
-        .map(c => `<span class="challenge-tag">${c}</span>`)
-        .join('') || 'Not specified';
+      challengesList.map(c => `<span class="challenge-tag">${c}</span>`).join('') || 'Not specified';
 
-    document.getElementById('insightStuck').textContent =
-      `"${answers.stuck || 'Not specified'}"`;
+    document.getElementById('insightStuck').textContent = `"${answers.stuck || 'Not specified'}"`;
 
-    document.getElementById('insightPosture').textContent =
-      answers['growth-posture'] || 'Not specified';
+    document.getElementById('insightPosture').textContent = answers['growth-posture'] || 'Not specified';
   }
 
   displayRecommendations() {
-    const aiRecommendations = this.data.ai?.nextActions;
+    const aiData = this.data.ai;
     const container = document.getElementById('recommendationsContainer');
 
-    // 🔥 If AI returned custom recommendations, use them
-    if (aiRecommendations && aiRecommendations.length > 0) {
-      container.innerHTML = aiRecommendations
-        .map((rec, index) => `
-          <div class="recommendation-item">
-            <div class="recommendation-title">${index + 1}. Action Step</div>
-            <p class="recommendation-text">${rec}</p>
-          </div>
-        `)
-        .join('');
+    if (!aiData) {
+      container.innerHTML = '<p>No recommendations available.</p>';
       return;
     }
 
-    // Fallback to stage-based recommendations
-    const stage =
-      this.data.ai?.stage || this.data.assessment?.stage;
+    // AI next actions from Make JSON
+    const nextActions = aiData.next_action || [];
+    const reflectionQuestion = aiData.reflection_question || '';
 
-    const recommendations = this.generateRecommendations(stage);
+    container.innerHTML = '';
 
-    container.innerHTML = recommendations
-      .map(rec => `
+    if (nextActions.length > 0) {
+      nextActions.forEach((action, index) => {
+        container.innerHTML += `
+          <div class="recommendation-item">
+            <div class="recommendation-title">${index + 1}. Action Step</div>
+            <p class="recommendation-text">${action}</p>
+          </div>
+        `;
+      });
+    }
+
+    // Add reflection question at the end
+    if (reflectionQuestion) {
+      container.innerHTML += `
         <div class="recommendation-item">
-          <div class="recommendation-title">${rec.title}</div>
-          <p class="recommendation-text">${rec.text}</p>
+          <div class="recommendation-title">Reflection Question</div>
+          <p class="recommendation-text">${reflectionQuestion}</p>
         </div>
-      `)
-      .join('');
-  }
-
-  generateRecommendations(stage) {
-    const baseRecommendations = {
-      'Stage 1: Identity Revelation': [
-        {
-          title: '1. Clarify Your Identity',
-          text: 'Define who you are beyond your current role. Identity shapes behavior.'
-        },
-        {
-          title: '2. Audit Your Beliefs',
-          text: 'Write down 3 beliefs currently shaping your decisions.'
-        },
-        {
-          title: '3. Seek Clarity Conversations',
-          text: 'Talk with someone 2 steps ahead of you about your blind spots.'
-        }
-      ],
-      'Stage 2: Mindset Transformation': [
-        {
-          title: '1. Reframe Limiting Narratives',
-          text: 'Challenge internal assumptions that limit growth.'
-        },
-        {
-          title: '2. Expand Learning Capacity',
-          text: 'Invest intentionally in skill and mental expansion.'
-        }
-      ],
-      'Stage 3: Leadership Activation': [
-        {
-          title: '1. Lead Something Small',
-          text: 'Start influencing within your immediate circle.'
-        }
-      ],
-      'Stage 4: Purpose Deployment': [
-        {
-          title: '1. Build Systems',
-          text: 'Structure your work to create consistent outcomes.'
-        }
-      ],
-      'Stage 5: Legacy Construction': [
-        {
-          title: '1. Design for Continuity',
-          text: 'Think beyond yourself. Build structures that outlive you.'
-        }
-      ]
-    };
-
-    return baseRecommendations[stage] ||
-      baseRecommendations['Stage 1: Identity Revelation'];
+      `;
+    }
   }
 
   getStageDescription(stage) {
     const descriptions = {
-      'Stage 1: Identity Revelation':
+      'Identity Revelation':
         'This stage is about uncovering who you truly are beneath performance and pressure.',
-      'Stage 2: Mindset Transformation':
+      'Mindset Transformation':
         'Here, you are rewiring the internal architecture shaping your decisions.',
-      'Stage 3: Leadership Activation':
+      'Leadership Activation':
         'You are stepping into influence and activating responsibility.',
-      'Stage 4: Purpose Deployment':
+      'Purpose Deployment':
         'Execution becomes aligned with purpose and structure.',
-      'Stage 5: Legacy Construction':
+      'Legacy Construction':
         'You are thinking beyond impact toward generational influence.'
     };
 
-    return descriptions[stage] ||
-      'Continue your growth journey with clarity and intention.';
+    return descriptions[stage] || 'Continue your growth journey with clarity and intention.';
   }
 
   setupButtons() {
@@ -187,10 +130,12 @@ class ResultsPage {
 
   downloadReport() {
     const answers = this.data.assessment?.answers;
-    const stage =
-      this.data.ai?.stage || this.data.assessment?.stage;
+    const aiData = this.data.ai;
 
-    const aiInsights = this.data.ai?.coreIssues || [];
+    const stage = aiData?.stage || this.data.assessment?.stage;
+    const coreInsight = aiData?.core_issue || '';
+    const nextActions = aiData?.next_action || [];
+    const reflectionQuestion = aiData?.reflection_question || '';
 
     const reportContent = `
 MAXIMIZE — PERSONAL INSIGHT REPORT
@@ -199,35 +144,34 @@ MAXIMIZE — PERSONAL INSIGHT REPORT
 STAGE:
 ${stage}
 
-CORE INSIGHTS:
-${aiInsights.join('\n')}
+CORE INSIGHT:
+${coreInsight}
+
+NEXT ACTIONS:
+${nextActions.map((a, i) => `${i + 1}. ${a}`).join('\n')}
+
+REFLECTION QUESTION:
+${reflectionQuestion}
 
 ROLE:
-${answers?.role}
+${answers?.role || 'Not specified'}
 
 CHALLENGES:
-${answers?.challenges?.join('\n')}
+${answers?.challenges?.join('\n') || 'Not specified'}
 
 WHAT FEELS STUCK:
-"${answers?.stuck}"
+"${answers?.stuck || 'Not specified'}"
 
 GROWTH POSTURE:
-${answers?.['growth-posture']}
+${answers?.['growth-posture'] || 'Not specified'}
 
 ════════════════════════════════════
 Generated by MAXIMIZE AI Diagnostic
     `.trim();
 
     const element = document.createElement('a');
-    element.setAttribute(
-      'href',
-      'data:text/plain;charset=utf-8,' +
-        encodeURIComponent(reportContent)
-    );
-    element.setAttribute(
-      'download',
-      'MAXIMIZE_Insight_Report.txt'
-    );
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(reportContent));
+    element.setAttribute('download', 'MAXIMIZE_Insight_Report.txt');
     document.body.appendChild(element);
     element.click();
     document.body.removeChild(element);
