@@ -14,42 +14,18 @@
   </header>
 
   <main class="results-container">
+    <!-- Loading State -->
     <div id="loadingState" class="loading-state">
       <div class="spinner"></div>
       <p>Analyzing your responses...</p>
     </div>
 
+    <!-- Results State -->
     <div id="resultsState" class="results-wrapper" style="display: none;">
-      
       <!-- Stage Card -->
       <div class="stage-card">
         <h1>You're in <span id="stageName"></span></h1>
         <p class="stage-description" id="stageDescription"></p>
-      </div>
-
-      <!-- Key Insights -->
-      <div class="insights-section">
-        <h2>Your Key Insights</h2>
-        
-        <div class="insight-card">
-          <div class="insight-label">Your Role</div>
-          <div class="insight-value" id="insightRole"></div>
-        </div>
-
-        <div class="insight-card">
-          <div class="insight-label">What's Challenging You</div>
-          <div class="insight-value" id="insightChallenges"></div>
-        </div>
-
-        <div class="insight-card">
-          <div class="insight-label">What Feels Stuck</div>
-          <div class="insight-value insight-long" id="insightStuck"></div>
-        </div>
-
-        <div class="insight-card">
-          <div class="insight-label">Your Growth Posture</div>
-          <div class="insight-value" id="insightPosture"></div>
-        </div>
       </div>
 
       <!-- Recommendations Section -->
@@ -58,13 +34,14 @@
         <div id="recommendationsContainer" class="recommendations-list"></div>
       </div>
 
-      <!-- CTA -->
+      <!-- CTA Buttons -->
       <div class="results-cta">
         <button id="downloadBtn" class="btn-primary">Download Your Insight Report</button>
         <button id="restartBtn" class="btn-secondary">Start Over</button>
       </div>
     </div>
 
+    <!-- Error State -->
     <div id="errorState" class="error-state" style="display: none;">
       <h2>Oops! Something went wrong</h2>
       <p>We couldn't process your assessment. Please try again.</p>

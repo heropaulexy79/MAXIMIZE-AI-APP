@@ -1,4 +1,4 @@
-// Results Page Logic — Updated for Make JSON
+// Results Page Logic — Only Show Make AI Output
 
 class ResultsPage {
   constructor() {
@@ -31,90 +31,47 @@ class ResultsPage {
     document.getElementById('loadingState').style.display = 'none';
     document.getElementById('resultsState').style.display = 'block';
 
-    this.displayStage();
-    this.displayInsights();
-    this.displayRecommendations();
+    this.displayAIOutput();
     this.setupButtons();
   }
 
-  displayStage() {
-    // Use AI stage if available, fallback to assessment
-    const stage = this.data.ai?.stage || this.data.assessment?.stage || 'Unknown Stage';
-
-    document.getElementById('stageName').textContent = stage;
-    document.getElementById('stageDescription').textContent =
-      this.getStageDescription(stage);
-  }
-
-  displayInsights() {
-    const answers = this.data.assessment?.answers;
+  displayAIOutput() {
     const aiData = this.data.ai;
-
-    if (!answers) return;
-
-    document.getElementById('insightRole').textContent = answers.role || 'Not specified';
-
-    const challengesList = answers.challenges || [];
-    document.getElementById('insightChallenges').innerHTML =
-      challengesList.map(c => `<span class="challenge-tag">${c}</span>`).join('') || 'Not specified';
-
-    document.getElementById('insightStuck').textContent = `"${answers.stuck || 'Not specified'}"`;
-
-    document.getElementById('insightPosture').textContent = answers['growth-posture'] || 'Not specified';
-  }
-
-  displayRecommendations() {
-    const aiData = this.data.ai;
-    const container = document.getElementById('recommendationsContainer');
 
     if (!aiData) {
-      container.innerHTML = '<p>No recommendations available.</p>';
+      document.getElementById('recommendationsContainer').innerHTML = '<p>No AI data available.</p>';
       return;
     }
 
-    // AI next actions from Make JSON
-    const nextActions = aiData.next_action || [];
-    const reflectionQuestion = aiData.reflection_question || '';
+    // Stage
+    document.getElementById('stageName').textContent = aiData.stage || 'Unknown Stage';
 
+    // Core Issue
+    document.getElementById('stageDescription').textContent = aiData.core_issue || '';
+
+    // Next Actions
+    const nextActions = aiData.next_action || [];
+    const container = document.getElementById('recommendationsContainer');
     container.innerHTML = '';
 
-    if (nextActions.length > 0) {
-      nextActions.forEach((action, index) => {
-        container.innerHTML += `
-          <div class="recommendation-item">
-            <div class="recommendation-title">${index + 1}. Action Step</div>
-            <p class="recommendation-text">${action}</p>
-          </div>
-        `;
-      });
-    }
+    nextActions.forEach((action, index) => {
+      container.innerHTML += `
+        <div class="recommendation-item">
+          <div class="recommendation-title">${index + 1}. Next Action</div>
+          <p class="recommendation-text">${action}</p>
+        </div>
+      `;
+    });
 
-    // Add reflection question at the end
-    if (reflectionQuestion) {
+    // Reflection Question
+    if (aiData.reflection_question) {
       container.innerHTML += `
         <div class="recommendation-item">
           <div class="recommendation-title">Reflection Question</div>
-          <p class="recommendation-text">${reflectionQuestion}</p>
+          <p class="recommendation-text">${aiData.reflection_question}</p>
         </div>
       `;
     }
-  }
-
-  getStageDescription(stage) {
-    const descriptions = {
-      'Identity Revelation':
-        'This stage is about uncovering who you truly are beneath performance and pressure.',
-      'Mindset Transformation':
-        'Here, you are rewiring the internal architecture shaping your decisions.',
-      'Leadership Activation':
-        'You are stepping into influence and activating responsibility.',
-      'Purpose Deployment':
-        'Execution becomes aligned with purpose and structure.',
-      'Legacy Construction':
-        'You are thinking beyond impact toward generational influence.'
-    };
-
-    return descriptions[stage] || 'Continue your growth journey with clarity and intention.';
   }
 
   setupButtons() {
@@ -129,13 +86,13 @@ class ResultsPage {
   }
 
   downloadReport() {
-    const answers = this.data.assessment?.answers;
     const aiData = this.data.ai;
+    if (!aiData) return;
 
-    const stage = aiData?.stage || this.data.assessment?.stage;
-    const coreInsight = aiData?.core_issue || '';
-    const nextActions = aiData?.next_action || [];
-    const reflectionQuestion = aiData?.reflection_question || '';
+    const stage = aiData.stage || '';
+    const coreIssue = aiData.core_issue || '';
+    const nextActions = aiData.next_action || [];
+    const reflectionQuestion = aiData.reflection_question || '';
 
     const reportContent = `
 MAXIMIZE — PERSONAL INSIGHT REPORT
@@ -144,26 +101,14 @@ MAXIMIZE — PERSONAL INSIGHT REPORT
 STAGE:
 ${stage}
 
-CORE INSIGHT:
-${coreInsight}
+CORE ISSUE:
+${coreIssue}
 
 NEXT ACTIONS:
 ${nextActions.map((a, i) => `${i + 1}. ${a}`).join('\n')}
 
 REFLECTION QUESTION:
 ${reflectionQuestion}
-
-ROLE:
-${answers?.role || 'Not specified'}
-
-CHALLENGES:
-${answers?.challenges?.join('\n') || 'Not specified'}
-
-WHAT FEELS STUCK:
-"${answers?.stuck || 'Not specified'}"
-
-GROWTH POSTURE:
-${answers?.['growth-posture'] || 'Not specified'}
 
 ════════════════════════════════════
 Generated by MAXIMIZE AI Diagnostic
