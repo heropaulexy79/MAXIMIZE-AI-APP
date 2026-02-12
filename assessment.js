@@ -239,22 +239,18 @@ class AssessmentForm {
     return [];
   }
 
-  submitAssessment() {
-    // Normalize next_action so JSON is valid
-    this.answers.next_action = this.normalizeNextAction(this.answers.next_action);
+ submitAssessment() {
+  const assessmentData = {
+    timestamp: new Date().toISOString(),
+    answers: this.answers
+  };
 
-    const assessmentData = {
-      timestamp: new Date().toISOString(),
-      answers: this.answers,
-      stage: this.mapToStage(this.answers['growth-posture'])
-    };
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.textContent = '✓ Processing...';
+  nextBtn.disabled = true;
 
-    const nextBtn = document.getElementById('nextBtn');
-    nextBtn.textContent = '✓ Processing...';
-    nextBtn.disabled = true;
-
-    this.sendToMake(assessmentData);
-  }
+  this.sendToMake(assessmentData);
+}
 
   sendToMake(assessmentData) {
     console.log("Sending to Make:", assessmentData);
@@ -302,17 +298,6 @@ class AssessmentForm {
         nextBtn.textContent = 'Error. Try Again';
         nextBtn.disabled = false;
       });
-  }
-
-  mapToStage(growthPosture) {
-    const stageMap = {
-      'Searching for clarityy': 'Stage 1: Identity Revelation',
-      'Reframing my mindset': 'Stage 2: Mindset Transformation',
-      'Stepping into leadership': 'Stage 3: Leadership Activation',
-      'Executing with purpose': 'Stage 4: Purpose Deployment',
-      'Thinking long-term impact': 'Stage 5: Legacy Construction'
-    };
-    return stageMap[growthPosture] || 'Unknown Stage';
   }
 }
 
