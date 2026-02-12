@@ -252,53 +252,35 @@ class AssessmentForm {
   this.sendToMake(assessmentData);
 }
 
-  sendToMake(assessmentData) {
-    console.log("Sending to Make:", assessmentData);
-
-    const webhookUrl = MAXIMIZE_CONFIG.make.webhookUrl;
-    const apiKey = MAXIMIZE_CONFIG.make.apiKey;
-
-    const nextBtn = document.getElementById('nextBtn');
-
-    if (!webhookUrl || !apiKey) {
-      console.warn('Make webhook not configured. Saving data locally only.');
-      localStorage.setItem('assessmentData', JSON.stringify(assessmentData));
-      window.location.href = 'results.html';
-      return;
+sendToMake(assessmentData) {
+  fetch(webhookUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(assessmentData)
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
     }
+    return response.json();
+  })
+  .then(result => {
+    console.log("Success:", result);
 
-    fetch(webhookUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-make-apikey": apiKey
-      },
-      body: JSON.stringify(assessmentData)
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`Make webhook failed: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(aiResult => {
-        console.log("AI Response from Make:", aiResult);
+    // Save result for results page
+    localStorage.setItem("assessmentResult", JSON.stringify(result));
 
-        const fullResult = {
-          assessment: assessmentData,
-          ai: aiResult
-        };
+    window.location.href = "results.html";
+  })
+  .catch(error => {
+    console.error("Error sending to Make:", error);
 
-        localStorage.setItem('maximizeResult', JSON.stringify(fullResult));
+    alert("Something went wrong. Please try again.");
+  });
+}
 
-        window.location.href = 'results.html';
-      })
-      .catch(error => {
-        console.error('Error sending to Make:', error);
-        nextBtn.textContent = 'Error. Try Again';
-        nextBtn.disabled = false;
-      });
-  }
 }
 
 // Initialize when DOM is ready
