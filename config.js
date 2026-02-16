@@ -87,8 +87,8 @@
 
 const MAXIMIZE_CONFIG = {
   make: {
-    webhookUrl: "https://hook.eu1.make.com/ee6s574asi6qdqhuv9addj93tlgtfes8",
-    apiKey: "maximize_assessment_v1_9XK3PqA"
+    webhookUrl: "https://hook.us2.make.com/rwtspcnxlz6md6a36lyeoacdfp28bgl1",
+    apiKey: "FFtbtptZ-NnWNy7"
   }
 };
 
