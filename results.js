@@ -108,18 +108,21 @@ class ResultsPage {
     downloadBtn.textContent = "Generating PDF...";
     downloadBtn.disabled = true;
 
-    // 1. FREEZE ANIMATIONS: Add the helper class
+    // 1. FREEZE ANIMATIONS
     reportElement.classList.add("pdf-capture-mode");
 
     html2canvas(reportElement, { 
-        scale: 2,
+        scale: 2, // Keep scale at 2 for crisp text
         useCORS: true, 
-        backgroundColor: "#0a192f" // Ensures background is dark so text is visible
+        backgroundColor: "#0a192f" 
     }).then(canvas => {
-        // 2. UNFREEZE: Remove the helper class immediately after capture
+        // 2. UNFREEZE
         reportElement.classList.remove("pdf-capture-mode");
 
-        const imgData = canvas.toDataURL("image/png");
+        // OPTIMIZATION HERE: Switch to JPEG and use 0.75 (75%) quality
+        // This drastically reduces file size compared to PNG
+        const imgData = canvas.toDataURL("image/jpeg", 0.75); 
+
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF("p", "mm", "a4");
 
@@ -127,7 +130,7 @@ class ResultsPage {
         const imgWidth = pageWidth - 10; 
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-        pdf.addImage(imgData, "PNG", 5, 10, imgWidth, imgHeight);
+        pdf.addImage(imgData, "JPEG", 5, 10, imgWidth, imgHeight);
         pdf.save("MAXIMIZE_Insight_Report.pdf");
 
         // Restore button
@@ -136,7 +139,6 @@ class ResultsPage {
 
     }).catch(error => {
         console.error("Error generating PDF:", error);
-        // Ensure we remove the class even if there is an error
         reportElement.classList.remove("pdf-capture-mode");
         
         downloadBtn.textContent = "Error generating PDF";
