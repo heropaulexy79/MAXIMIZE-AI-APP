@@ -104,36 +104,41 @@ class ResultsPage {
     const downloadBtn = document.getElementById("downloadBtn");
     const originalText = downloadBtn.textContent;
 
-    // Show loading state on button
+    // Show loading state
     downloadBtn.textContent = "Generating PDF...";
     downloadBtn.disabled = true;
 
-    // Use html2canvas to capture the visual output
-    html2canvas(reportElement, { 
-        scale: 2,           // Higher scale for better quality
-        useCORS: true,      // Helps with loading external fonts/images if any
-        backgroundColor: "#0a192f" // Fallback background color to ensure text is visible
-    }).then(canvas => {
-        const imgData = canvas.toDataURL("image/png");
+    // 1. FREEZE ANIMATIONS: Add the helper class
+    reportElement.classList.add("pdf-capture-mode");
 
+    html2canvas(reportElement, { 
+        scale: 2,
+        useCORS: true, 
+        backgroundColor: "#0a192f" // Ensures background is dark so text is visible
+    }).then(canvas => {
+        // 2. UNFREEZE: Remove the helper class immediately after capture
+        reportElement.classList.remove("pdf-capture-mode");
+
+        const imgData = canvas.toDataURL("image/png");
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF("p", "mm", "a4");
 
         const pageWidth = pdf.internal.pageSize.getWidth();
-        // Add a tiny bit of margin by adjusting width
         const imgWidth = pageWidth - 10; 
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-        // X, Y coordinates: 5mm margin on the sides, 10mm from top
         pdf.addImage(imgData, "PNG", 5, 10, imgWidth, imgHeight);
-
         pdf.save("MAXIMIZE_Insight_Report.pdf");
 
-        // Restore button state
+        // Restore button
         downloadBtn.textContent = originalText;
         downloadBtn.disabled = false;
+
     }).catch(error => {
         console.error("Error generating PDF:", error);
+        // Ensure we remove the class even if there is an error
+        reportElement.classList.remove("pdf-capture-mode");
+        
         downloadBtn.textContent = "Error generating PDF";
         setTimeout(() => {
             downloadBtn.textContent = originalText;

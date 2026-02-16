@@ -298,3 +298,11 @@
     font-size: 0.9rem;
   }
 }
+
+/* PDF Capture Override - Add this to the bottom */
+.pdf-capture-mode * {
+  animation: none !important;
+  transition: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
