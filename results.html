@@ -14,34 +14,31 @@
   </header>
 
   <main class="results-container">
-    <!-- Loading State -->
     <div id="loadingState" class="loading-state">
       <div class="spinner"></div>
       <p>Analyzing your responses...</p>
     </div>
 
-    <!-- Results State -->
     <div id="resultsState" class="results-wrapper" style="display: none;">
-      <!-- Stage Card -->
-      <div class="stage-card">
-        <h1>You're in <span id="stageName"></span></h1>
-        <p class="stage-description" id="stageDescription"></p>
+      
+      <div id="reportContent" style="padding: 20px; border-radius: 12px; background: var(--maximize-dark, #0a192f);">
+        <div class="stage-card">
+          <h1>You're in <span id="stageName"></span></h1>
+          <p class="stage-description" id="stageDescription"></p>
+        </div>
+
+        <div class="recommendations-section">
+          <h2>Next Steps for Growth</h2>
+          <div id="recommendationsContainer" class="recommendations-list"></div>
+        </div>
       </div>
 
-      <!-- Recommendations Section -->
-      <div class="recommendations-section">
-        <h2>Next Steps for Growth</h2>
-        <div id="recommendationsContainer" class="recommendations-list"></div>
-      </div>
-
-      <!-- CTA Buttons -->
       <div class="results-cta">
         <button id="downloadBtn" class="btn-primary">Download Your Insight Report</button>
         <button id="restartBtn" class="btn-secondary">Start Over</button>
       </div>
     </div>
 
-    <!-- Error State -->
     <div id="errorState" class="error-state" style="display: none;">
       <h2>Oops! Something went wrong</h2>
       <p>We couldn't process your assessment. Please try again.</p>
@@ -49,6 +46,8 @@
     </div>
   </main>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="results.js"></script>
 </body>
 </html>

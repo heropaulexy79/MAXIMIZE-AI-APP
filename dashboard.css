@@ -1,0 +1,336 @@
+/* Inherit variables from style.css */
+
+/* Dashboard Layout */
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 85vh;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* Main content vs Sidebar ratio */
+  gap: 2rem;
+  grid-template-areas: 
+    "hero actions"
+    "history actions"
+    "quick actions";
+}
+
+/* Nav Specifics */
+.dashboard-nav {
+  justify-content: space-between;
+}
+
+.nav-links a {
+  color: var(--maximize-muted);
+  text-decoration: none;
+  margin: 0 1rem;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: var(--maximize-deep);
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-pic {
+  width: 35px;
+  height: 35px;
+  background: var(--maximize-deep);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* B. Hero Section */
+.dashboard-hero {
+  grid-area: hero;
+}
+
+.mini-card {
+  padding: 2rem;
+  margin-bottom: 0;
+  text-align: left; /* Override center align from results.css */
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.label {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 0.8rem;
+  color: var(--maximize-bright);
+}
+
+.date-badge {
+  background: rgba(255,255,255,0.1);
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+
+.core-issue {
+  font-size: 1.1rem;
+  color: #e2e8f0;
+  margin-bottom: 2rem;
+}
+
+/* Progress Bar */
+.progress-wrapper {
+  margin-top: 1.5rem;
+}
+
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #94a3b8;
+}
+
+.progress-bar-bg {
+  height: 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--maximize-mid), var(--maximize-bright));
+  border-radius: 4px;
+  transition: width 1s ease-in-out;
+}
+
+/* C. Action Panel (Sidebar) */
+.action-panel {
+  grid-area: actions;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid rgba(30, 111, 184, 0.15);
+  height: fit-content;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.8rem;
+}
+
+.panel-header h2 {
+  font-size: 1.2rem;
+  color: var(--maximize-text);
+  margin: 0;
+}
+
+.action-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.action-item:hover {
+  background: #f1f5f9;
+}
+
+.action-checkbox {
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+.action-text {
+  font-size: 0.95rem;
+  color: #334155;
+  line-height: 1.4;
+}
+
+.action-text.done {
+  text-decoration: line-through;
+  color: #94a3b8;
+}
+
+/* Reflection Box */
+.reflection-box {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed #cbd5e1;
+}
+
+.reflection-box h3 {
+  font-size: 1rem;
+  color: var(--maximize-deep);
+  margin-bottom: 0.5rem;
+}
+
+.reflection-box textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  margin: 0.5rem 0;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.btn-small {
+  background: var(--maximize-mid);
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+/* D. History Panel */
+.history-panel {
+  grid-area: history;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.history-table th {
+  text-align: left;
+  padding: 0.8rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.history-table td {
+  padding: 0.8rem;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  font-size: 0.95rem;
+}
+
+.stage-badge {
+  background: rgba(30, 111, 184, 0.1);
+  color: var(--maximize-deep);
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+/* E. Quick Actions */
+.quick-actions {
+  grid-area: quick; /* This needs to be defined in grid-template-areas if used, or placed inside action panel */
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Fix for Grid Area "quick" being inside the left column */
+.dashboard-grid {
+  grid-template-areas: 
+    "hero actions"
+    "history actions"
+    "quick actions";
+}
+
+.action-card {
+  flex: 1;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(5px);
+  padding: 1.2rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+}
+
+.action-card h3 {
+  font-size: 1.1rem;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.action-card p {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  color: #e2e8f0;
+}
+
+.btn-primary-small, .btn-secondary-small {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary-small {
+  background: var(--maximize-bright);
+  color: var(--maximize-deep);
+}
+
+.btn-secondary-small {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+/* Footer */
+.dashboard-footer {
+  text-align: center;
+  padding: 2rem;
+  color: #cbd5e1;
+  font-size: 0.9rem;
+}
+
+.footer-links {
+  margin-bottom: 1rem;
+}
+
+.footer-links a {
+  color: #cbd5e1;
+  margin: 0 0.5rem;
+  text-decoration: none;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas: 
+      "hero"
+      "actions"
+      "history"
+      "quick";
+  }
+}

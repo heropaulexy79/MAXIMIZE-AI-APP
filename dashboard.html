@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MAXIMIZE — User Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="results.css" />
+  <link rel="stylesheet" href="dashboard.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+  <header class="navbar dashboard-nav">
+    <div class="nav-left">
+      <img src="Asset 9@3x.png" alt="MAXIMIZE Nation" class="logo" />
+    </div>
+    
+    <nav class="nav-links">
+      <a href="#" class="active"><i class="fas fa-home"></i> Dashboard</a>
+      <a href="#"><i class="fas fa-file-alt"></i> My Reports</a>
+      <a href="#"><i class="fas fa-book"></i> Learning Library</a>
+    </nav>
+
+    <div class="user-profile">
+      <span class="greeting">Good morning, <span id="userName">User</span></span>
+      <div class="profile-pic">U</div>
+      <button class="logout-btn"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+  </header>
+
+  <main class="dashboard-container">
+    <div class="dashboard-grid">
+      
+      <section class="dashboard-hero">
+        <div class="stage-card mini-card">
+          <div class="card-header">
+            <span class="label">Current Stage</span>
+            <span class="date-badge" id="assessmentDate">Updated: Today</span>
+          </div>
+          <h1><span id="userStage">Loading...</span></h1>
+          <p class="core-issue" id="userCoreIssue">Loading your insights...</p>
+          
+          <div class="progress-wrapper">
+            <div class="progress-labels">
+              <span>Transformation Journey</span>
+              <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="action-panel">
+        <div class="panel-header">
+          <h2><i class="fas fa-check-circle"></i> Today's Focus</h2>
+          <span class="refresh-link"><i class="fas fa-sync"></i> Refresh</span>
+        </div>
+        
+        <div class="action-list" id="actionList">
+          <div class="loading-placeholder">Loading actions...</div>
+        </div>
+
+        <div class="reflection-box">
+          <h3><i class="fas fa-lightbulb"></i> Daily Reflection</h3>
+          <p id="reflectionPrompt">What is one thing you can do today to move forward?</p>
+          <textarea placeholder="Write your thoughts here..." rows="3"></textarea>
+          <button class="btn-small">Save Note</button>
+        </div>
+      </section>
+
+      <section class="history-panel">
+        <div class="panel-header">
+          <h2><i class="fas fa-history"></i> Growth History</h2>
+          <button class="btn-text">View All</button>
+        </div>
+        
+        <div class="history-chart">
+          <div class="chart-bars" id="historyChart">
+            </div>
+        </div>
+
+        <div class="history-list">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Stage</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="quick-actions">
+        <div class="action-card primary">
+          <h3>Ready for a check-in?</h3>
+          <p>Update your stage and get new insights.</p>
+          <a href="assessment.html" class="btn-primary-small">Start Assessment</a>
+        </div>
+        <div class="action-card secondary">
+          <h3>Download Report</h3>
+          <p>Get a PDF copy of your current roadmap.</p>
+          <button id="exportBtn" class="btn-secondary-small">Export PDF</button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="dashboard-footer">
+    <div class="footer-links">
+      <a href="#">About MAXIMIZE</a>
+      <a href="#">Contact Support</a>
+      <a href="#">Privacy Policy</a>
+    </div>
+    <p>&copy; 2026 MAXIMIZE Nation. All rights reserved.</p>
+  </footer>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
